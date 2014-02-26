@@ -40,40 +40,6 @@ import org.json.JSONTokener;
  */
 public class VDF {
 
-    /**
-     * Gets the next String value, starting from the current character.
-     *
-     * @param x The JSONTokener to act on.
-     * @return String value.
-     * @throws JSONException
-     */
-    private static String getStringValue(JSONTokener x) throws JSONException {
-        StringBuilder sb = new StringBuilder();
-
-        char c = x.next();
-
-        if (c == '\"') {
-            boolean done = false;
-            while (!done) {
-                c = x.next();
-                switch (c) {
-                    case '\\':
-                        // Unescape the character -- it'll be reescaped in JSON.
-                        sb.append(x.next());
-                        break;
-                    case '\"':
-                        // End of quited value.
-                        done = true;
-                        break;
-                    default:
-                        sb.append(c);
-                }
-            }
-        }
-
-        return sb.toString();
-    }
-
     public static JSONObject toJSONObject(JSONTokener x) throws JSONException {
         JSONObject jo = new JSONObject();
 
@@ -83,15 +49,13 @@ public class VDF {
             switch (c) {
                 case '\"':
                     // Case that it is a String value.
-                    x.back();
-                    String key = getStringValue(x);
+                    String key = x.nextString('\"');
 
                     char ctl = x.nextClean();
 
                     // Case that the next thing is another String value, then put.
                     if (ctl == '\"') {
-                        x.back();
-                        String value = getStringValue(x);
+                        String value = x.nextString('\"');
                         jo.put(key, value);
                     } // Or a nested KeyValue pair.
                     else if (ctl == '{') {
@@ -102,6 +66,10 @@ public class VDF {
                 case '}':
                     // Case that we are done parsing this KeyValue collection.
                     return jo;
+                case '/':
+                    if (x.next() == '/')
+                        x.skipTo('\n');
+                    x.nextClean();
             }
         }
         return jo;
