@@ -48,28 +48,48 @@ public class VDF {
 
             switch (c) {
                 case '\"':
-                    // Case that it is a String value.
+                    // Case that it is a String key.
                     String key = x.nextString('\"');
 
                     char ctl = x.nextClean();
+                    
+                    switch (ctl) {
+                        case '/':
+                            // Comment that we should skip.
+                            if (x.next() == '/') {
+                                x.skipTo('\n');
+                                ctl = x.nextClean();
+                            }
+                    }
 
-                    // Case that the next thing is another String value, then put.
+                    // Case that the next thing is another String value; add.
                     if (ctl == '\"') {
                         String value = x.nextString('\"');
                         jo.put(key, value);
-                    } // Or a nested KeyValue pair.
+                    } // Or a nested KeyValue pair. Parse then add.
                     else if (ctl == '{') {
                         jo.put(key, toJSONObject(x));
                     }
 
+                    // TODO Add support for bracketed tokens?
+
                     break;
                 case '}':
                     // Case that we are done parsing this KeyValue collection.
+                    // Return it (back to the calling toJSONObject() method).
                     return jo;
+                case '\0':
+                    // Disregard null character.
+                    break;
                 case '/':
-                    if (x.next() == '/')
+                    if (x.next() == '/') {
+                        // It's a comment. Skip to the next line.
                         x.skipTo('\n');
-                    x.nextClean();
+                        break;
+                    }
+                default:
+                    String fmtError = "Unexpected character \'%s\'";
+                    throw x.syntaxError(String.format(fmtError, c));
             }
         }
         return jo;
