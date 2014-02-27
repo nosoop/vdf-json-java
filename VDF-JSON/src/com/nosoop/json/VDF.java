@@ -40,6 +40,63 @@ import org.json.JSONTokener;
  */
 public class VDF {
 
+    /**
+     * Opening brace character. Used to signal the start of a nested KeyValue
+     * set.
+     */
+    public static final char L_BRACE = '{';
+
+    /**
+     * Closing brace character. Used to signal the end of a nested KeyValue set.
+     */
+    public static final char R_BRACE = '}';
+    
+    /**
+     * Forward slash character. Used in C++ styled comments.
+     */
+    public static final char SLASH = '/';
+    
+    /**
+     * Backward slash character. Used to escape strings.
+     */
+    public static final char BACK_SLASH = '\\';
+    
+    /**
+     * Quote character. Used to signal the start of a String (key or value).
+     */
+    public static final char QUOTE = '"';
+    
+    /**
+     * Utility method to parse a VDF value.
+     *
+     * @param x The JSONTokener to use.
+     * @param delimiter The character that signals the end of the
+     * @return
+     * @throws JSONException
+     */
+    private static String getVDFValue(JSONTokener x, final char delimiter) throws JSONException {
+        StringBuilder sb = new StringBuilder();
+
+        while (x.more()) {
+            char c = x.next();
+            switch (c) {
+                case BACK_SLASH:
+                    // Unescape character.
+                    sb.append(x.next());
+                    break;
+                default:
+                    // End 
+                    if (c == delimiter) {
+                        return sb.toString();
+                    } else {
+                        sb.append(c);
+                    }
+            }
+        }
+
+        return sb.toString();
+    }
+
     public static JSONObject toJSONObject(JSONTokener x) throws JSONException {
         JSONObject jo = new JSONObject();
 
@@ -47,42 +104,41 @@ public class VDF {
             char c = x.nextClean();
 
             switch (c) {
-                case '\"':
+                case QUOTE:
                     // Case that it is a String key.
-                    String key = x.nextString('\"');
+                    String key = x.nextString(QUOTE);
 
                     char ctl = x.nextClean();
-                    
                     switch (ctl) {
-                        case '/':
-                            // Comment that we should skip.
-                            if (x.next() == '/') {
+                        case SLASH:
+                            if (x.next() == SLASH) {
+                                // Comment -- ignore the rest of the line.
                                 x.skipTo('\n');
                                 ctl = x.nextClean();
                             }
                     }
 
                     // Case that the next thing is another String value; add.
-                    if (ctl == '\"') {
-                        String value = x.nextString('\"');
+                    if (ctl == QUOTE) {
+                        String value = getVDFValue(x, QUOTE);
                         jo.put(key, value);
                     } // Or a nested KeyValue pair. Parse then add.
-                    else if (ctl == '{') {
+                    else if (ctl == L_BRACE) {
                         jo.put(key, toJSONObject(x));
                     }
 
                     // TODO Add support for bracketed tokens?
 
                     break;
-                case '}':
+                case R_BRACE:
                     // Case that we are done parsing this KeyValue collection.
                     // Return it (back to the calling toJSONObject() method).
                     return jo;
                 case '\0':
                     // Disregard null character.
                     break;
-                case '/':
-                    if (x.next() == '/') {
+                case SLASH:
+                    if (x.next() == SLASH) {
                         // It's a comment. Skip to the next line.
                         x.skipTo('\n');
                         break;
