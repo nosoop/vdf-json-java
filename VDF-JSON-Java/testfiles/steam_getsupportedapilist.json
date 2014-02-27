@@ -1,0 +1,547 @@
+{
+	"apilist": {
+		"interfaces": [
+			{
+				"name": "IGCVersion_205790",
+				"methods": [
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IGCVersion_247040",
+				"methods": [
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IGCVersion_440",
+				"methods": [
+					{
+						"name": "GetClientVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IGCVersion_570",
+				"methods": [
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IGCVersion_730",
+				"methods": [
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IGCVersion_816",
+				"methods": [
+					{
+						"name": "GetClientVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetClusterVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetServerVersion",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IPortal2Leaderboards_620",
+				"methods": [
+					{
+						"name": "GetBucketizedData",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "leaderboardName",
+								"type": "string",
+								"optional": false,
+								"description": "The leaderboard name to fetch data for."
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "IPortal2Leaderboards_841",
+				"methods": [
+					{
+						"name": "GetBucketizedData",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "leaderboardName",
+								"type": "string",
+								"optional": false,
+								"description": "The leaderboard name to fetch data for."
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamApps",
+				"methods": [
+					{
+						"name": "GetAppList",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetAppList",
+						"version": 2,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetServersAtAddress",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "addr",
+								"type": "string",
+								"optional": false,
+								"description": "IP or IP:queryport to list"
+							}
+						]
+						
+					},
+					{
+						"name": "UpToDateCheck",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "appid",
+								"type": "uint32",
+								"optional": false,
+								"description": "AppID of game"
+							},
+							{
+								"name": "version",
+								"type": "uint32",
+								"optional": false,
+								"description": "The installed version of the game"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamNews",
+				"methods": [
+					{
+						"name": "GetNewsForApp",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "appid",
+								"type": "uint32",
+								"optional": false,
+								"description": "AppID to retrieve news for"
+							},
+							{
+								"name": "maxlength",
+								"type": "uint32",
+								"optional": true,
+								"description": "Maximum length for the content to return, if this is 0 the full content is returned, if it's less then a blurb is generated to fit."
+							},
+							{
+								"name": "enddate",
+								"type": "uint32",
+								"optional": true,
+								"description": "Retrieve posts earlier than this date (unix epoch timestamp)"
+							},
+							{
+								"name": "count",
+								"type": "uint32",
+								"optional": true,
+								"description": "# of posts to retrieve (default 20)"
+							}
+						]
+						
+					},
+					{
+						"name": "GetNewsForApp",
+						"version": 2,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "appid",
+								"type": "uint32",
+								"optional": false,
+								"description": "AppID to retrieve news for"
+							},
+							{
+								"name": "maxlength",
+								"type": "uint32",
+								"optional": true,
+								"description": "Maximum length for the content to return, if this is 0 the full content is returned, if it's less then a blurb is generated to fit."
+							},
+							{
+								"name": "enddate",
+								"type": "uint32",
+								"optional": true,
+								"description": "Retrieve posts earlier than this date (unix epoch timestamp)"
+							},
+							{
+								"name": "count",
+								"type": "uint32",
+								"optional": true,
+								"description": "# of posts to retrieve (default 20)"
+							},
+							{
+								"name": "feeds",
+								"type": "string",
+								"optional": true,
+								"description": "Comma-seperated list of feed names to return news for"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamRemoteStorage",
+				"methods": [
+					{
+						"name": "GetPublishedFileDetails",
+						"version": 1,
+						"httpmethod": "POST",
+						"parameters": [
+							{
+								"name": "itemcount",
+								"type": "uint32",
+								"optional": false,
+								"description": "Number of items being requested"
+							},
+							{
+								"name": "publishedfileids[0]",
+								"type": "uint64",
+								"optional": false,
+								"description": "published file id to look up"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamUserAuth",
+				"methods": [
+					{
+						"name": "AuthenticateUser",
+						"version": 1,
+						"httpmethod": "POST",
+						"parameters": [
+							{
+								"name": "steamid",
+								"type": "uint64",
+								"optional": false,
+								"description": "Should be the users steamid, unencrypted."
+							},
+							{
+								"name": "sessionkey",
+								"type": "rawbinary",
+								"optional": false,
+								"description": "Should be a 32 byte random blob of data, which is then encrypted with RSA using the Steam system's public key.  Randomness is important here for security."
+							},
+							{
+								"name": "encrypted_loginkey",
+								"type": "rawbinary",
+								"optional": false,
+								"description": "Should be the users hashed loginkey, AES encrypted with the sessionkey."
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamUserOAuth",
+				"methods": [
+					{
+						"name": "GetTokenDetails",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "access_token",
+								"type": "string",
+								"optional": false,
+								"description": "OAuth2 token for which to return details"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamUserStats",
+				"methods": [
+					{
+						"name": "GetGlobalAchievementPercentagesForApp",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "gameid",
+								"type": "uint64",
+								"optional": false,
+								"description": "GameID to retrieve the achievement percentages for"
+							}
+						]
+						
+					},
+					{
+						"name": "GetGlobalAchievementPercentagesForApp",
+						"version": 2,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "gameid",
+								"type": "uint64",
+								"optional": false,
+								"description": "GameID to retrieve the achievement percentages for"
+							}
+						]
+						
+					},
+					{
+						"name": "GetGlobalStatsForGame",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "appid",
+								"type": "uint32",
+								"optional": false,
+								"description": "AppID that we're getting global stats for"
+							},
+							{
+								"name": "count",
+								"type": "uint32",
+								"optional": false,
+								"description": "Number of stats get data for"
+							},
+							{
+								"name": "name[0]",
+								"type": "string",
+								"optional": false,
+								"description": "Names of stat to get data for"
+							},
+							{
+								"name": "startdate",
+								"type": "uint32",
+								"optional": true,
+								"description": "Start date for daily totals (unix epoch timestamp)"
+							},
+							{
+								"name": "enddate",
+								"type": "uint32",
+								"optional": true,
+								"description": "End date for daily totals (unix epoch timestamp)"
+							}
+						]
+						
+					},
+					{
+						"name": "GetNumberOfCurrentPlayers",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "appid",
+								"type": "uint32",
+								"optional": false,
+								"description": "AppID that we're getting user count for"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamWebAPIUtil",
+				"methods": [
+					{
+						"name": "GetServerInfo",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+
+						]
+						
+					},
+					{
+						"name": "GetSupportedAPIList",
+						"version": 1,
+						"httpmethod": "GET",
+						"parameters": [
+							{
+								"name": "key",
+								"type": "string",
+								"optional": true,
+								"description": "access key"
+							}
+						]
+						
+					}
+				]
+				
+			},
+			{
+				"name": "ISteamWebUserPresenceOAuth",
+				"methods": [
+					{
+						"name": "PollStatus",
+						"version": 1,
+						"httpmethod": "POST",
+						"parameters": [
+							{
+								"name": "steamid",
+								"type": "string",
+								"optional": false,
+								"description": "Steam ID of the user"
+							},
+							{
+								"name": "umqid",
+								"type": "uint64",
+								"optional": false,
+								"description": "UMQ Session ID"
+							},
+							{
+								"name": "message",
+								"type": "uint32",
+								"optional": false,
+								"description": "Message that was last known to the user"
+							},
+							{
+								"name": "pollid",
+								"type": "uint32",
+								"optional": true,
+								"description": "Caller-specific poll id"
+							},
+							{
+								"name": "sectimeout",
+								"type": "uint32",
+								"optional": true,
+								"description": "Long-poll timeout in seconds"
+							},
+							{
+								"name": "secidletime",
+								"type": "uint32",
+								"optional": true,
+								"description": "How many seconds is client considering itself idle, e.g. screen is off"
+							},
+							{
+								"name": "use_accountids",
+								"type": "uint32",
+								"optional": true,
+								"description": "Boolean, 0 (default): return steamid_from in output, 1: return accountid_from"
+							}
+						]
+						
+					}
+				]
+				
+			}
+		]
+		
+	}
+}
