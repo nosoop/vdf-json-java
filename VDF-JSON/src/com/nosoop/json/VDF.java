@@ -45,27 +45,28 @@ public class VDF {
      * set.
      */
     public static final char L_BRACE = '{';
-
     /**
      * Closing brace character. Used to signal the end of a nested KeyValue set.
      */
     public static final char R_BRACE = '}';
-    
     /**
      * Forward slash character. Used in C++ styled comments.
      */
     public static final char SLASH = '/';
-    
     /**
      * Backward slash character. Used to escape strings.
      */
     public static final char BACK_SLASH = '\\';
-    
     /**
      * Quote character. Used to signal the start of a String (key or value).
      */
     public static final char QUOTE = '"';
-    
+    /**
+     * Newline character. Essentially whitespace, but we need it when we're
+     * skipping C++ styled comments.
+     */
+    public static final char NEWLINE = '\n';
+
     /**
      * Utility method to parse a VDF value.
      *
@@ -85,10 +86,12 @@ public class VDF {
                     sb.append(x.next());
                     break;
                 default:
-                    // End 
+                    // Return the string if the tokener hit the delimiter.
+                    // (If it was escaped, it was handled in the previous case.
                     if (c == delimiter) {
                         return sb.toString();
-                    } else {
+                    } // Otherwise, append it to the string.
+                    else {
                         sb.append(c);
                     }
             }
@@ -97,6 +100,14 @@ public class VDF {
         return sb.toString();
     }
 
+    /**
+     * Attempts to convert what is assumed to be a JSONTokener containing a
+     * String with VDF text into the JSON format.
+     *
+     * @param string Input data, assumed to be in the Valve Data Format.
+     * @return A JSON representation of the assumed-VDF data.
+     * @throws JSONException Parse exception?
+     */
     public static JSONObject toJSONObject(JSONTokener x) throws JSONException {
         JSONObject jo = new JSONObject();
 
@@ -105,7 +116,7 @@ public class VDF {
 
             switch (c) {
                 case QUOTE:
-                    // Case that it is a String key.
+                    // Case that it is a String key and we should expect its value next.
                     String key = x.nextString(QUOTE);
 
                     char ctl = x.nextClean();
@@ -113,7 +124,7 @@ public class VDF {
                         case SLASH:
                             if (x.next() == SLASH) {
                                 // Comment -- ignore the rest of the line.
-                                x.skipTo('\n');
+                                x.skipTo(NEWLINE);
                                 ctl = x.nextClean();
                             }
                     }
@@ -140,7 +151,7 @@ public class VDF {
                 case SLASH:
                     if (x.next() == SLASH) {
                         // It's a comment. Skip to the next line.
-                        x.skipTo('\n');
+                        x.skipTo(NEWLINE);
                         break;
                     }
                 default:
@@ -152,8 +163,8 @@ public class VDF {
     }
 
     /**
-     * Attempts to convert what is assumed to be a VDF file into the JSON
-     * format.
+     * Attempts to convert what is assumed to be a String containing VDF text
+     * into the JSON format.
      *
      * @param string Input data, assumed to be in the Valve Data Format.
      * @return A JSON representation of the assumed-VDF data.
