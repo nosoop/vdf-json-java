@@ -1,4 +1,4 @@
-package com.nosoop.json.vdf;
+package com.nosoop.json;
 
 /**
  * The MIT License (MIT)
