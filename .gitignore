@@ -4,3 +4,8 @@
 *.jar
 *.war
 *.ear
+/VDF-JSON/nbproject/private/
+/VDF-JSON/build/
+/VDF-JSON/dist/
+/VDF-JSON-Java/target/
+/target/
