@@ -120,13 +120,12 @@ public class VDF {
                     String key = x.nextString(QUOTE);
 
                     char ctl = x.nextClean();
-                    switch (ctl) {
-                        case SLASH:
-                            if (x.next() == SLASH) {
-                                // Comment -- ignore the rest of the line.
-                                x.skipTo(NEWLINE);
-                                ctl = x.nextClean();
-                            }
+                    if (ctl == SLASH) {
+                        if (x.next() == SLASH) {
+                            // Comment -- ignore the rest of the line.
+                            x.skipTo(NEWLINE);
+                            ctl = x.nextClean();
+                        }
                     }
 
                     // Case that the next thing is another String value; add.
