@@ -31,13 +31,26 @@ Sample conversion results
         "name": "IGCVersion_205790"
     },
     {
-        "methods": [{
-            "name": "GetServerVersion",
-            "httpmethod": "GET",
-            "parameters": [],
-            "version": 1
-        }],
-        "name": "IGCVersion_247040"
+        "methods": [
+            {
+                "name": "GetServerInfo",
+                "httpmethod": "GET",
+                "parameters": [],
+                "version": 1
+            },
+            {
+                "name": "GetSupportedAPIList",
+                "httpmethod": "GET",
+                "parameters": [{
+                    "description": "access key",
+                    "optional": true,
+                    "name": "key",
+                    "type": "string"
+                }],
+                "version": 1
+            }
+        ],
+        "name": "ISteamWebAPIUtil"
     }]
 }}
 
@@ -54,13 +67,26 @@ Sample conversion results
         "name": "IGCVersion_205790"
     },
     {
-        "methods": [{
-            "name": "GetServerVersion",
-            "httpmethod": "GET",
-            "parameters": [],
-            "version": "1"
-        }],
-        "name": "IGCVersion_247040"
+        "methods": [
+            {
+                "name": "GetServerInfo",
+                "httpmethod": "GET",
+                "parameters": [],
+                "version": "1"
+            },
+            {
+                "name": "GetSupportedAPIList",
+                "httpmethod": "GET",
+                "parameters": [{
+                    "description": "access key",
+                    "name": "key",
+                    "optional": "1",
+                    "type": "string"
+                }],
+                "version": "1"
+            }
+        ],
+        "name": "ISteamWebAPIUtil"
     }]
 }}
 ```
