@@ -174,7 +174,23 @@ public class VDF {
             switch (c) {
                 case BACK_SLASH:
                     // Unescape character.
-                    sb.append(x.next());
+                    // -- Allowed Escape sequences are \n, \t, \\, and \".
+                    char u = x.next();
+                    switch (u) {
+                        case 'n':
+                            sb.append('\n');
+                            break;
+                        case 't':
+                            sb.append('\t');
+                            break;
+                        case '\\':
+                        case '\"':
+                            sb.append(u);
+                        default:
+                            String fmtError = 
+                                    "Unexpected escape sequence \"\\%s\"";
+                            throw x.syntaxError(String.format(fmtError, u));
+                    }
                     break;
                 default:
                     // Return the string if the tokener hit the delimiter.
