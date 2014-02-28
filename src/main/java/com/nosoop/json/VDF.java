@@ -24,6 +24,12 @@ package com.nosoop.json;
  * SOFTWARE.
  *
  */
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -68,47 +74,17 @@ public class VDF {
     public static final char NEWLINE = '\n';
 
     /**
-     * Utility method to parse a VDF value.
-     *
-     * @param x The JSONTokener to use.
-     * @param delimiter The character that signals the end of the
-     * @return
-     * @throws JSONException
-     */
-    private static String getVDFValue(JSONTokener x, final char delimiter) throws JSONException {
-        StringBuilder sb = new StringBuilder();
-
-        while (x.more()) {
-            char c = x.next();
-            switch (c) {
-                case BACK_SLASH:
-                    // Unescape character.
-                    sb.append(x.next());
-                    break;
-                default:
-                    // Return the string if the tokener hit the delimiter.
-                    // (If it was escaped, it was handled in the previous case.
-                    if (c == delimiter) {
-                        return sb.toString();
-                    } // Otherwise, append it to the string.
-                    else {
-                        sb.append(c);
-                    }
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
      * Attempts to convert what is assumed to be a JSONTokener containing a
      * String with VDF text into the JSON format.
      *
      * @param string Input data, assumed to be in the Valve Data Format.
+     * @param convertArrays Whether or not to convert VDF-formatted arrays into
+     * JSONArrays.
      * @return A JSON representation of the assumed-VDF data.
      * @throws JSONException Parse exception?
      */
-    public static JSONObject toJSONObject(JSONTokener x) throws JSONException {
+    public static JSONObject toJSONObject(JSONTokener x, boolean convertArrays)
+            throws JSONException {
         JSONObject jo = new JSONObject();
 
         while (x.more()) {
@@ -116,7 +92,7 @@ public class VDF {
 
             switch (c) {
                 case QUOTE:
-                    // Case that it is a String key and we should expect its value next.
+                    // Case that it is a String key, expect its value next.
                     String key = x.nextString(QUOTE);
 
                     char ctl = x.nextClean();
@@ -134,7 +110,7 @@ public class VDF {
                         jo.put(key, value);
                     } // Or a nested KeyValue pair. Parse then add.
                     else if (ctl == L_BRACE) {
-                        jo.put(key, toJSONObject(x));
+                        jo.put(key, toJSONObject(x, convertArrays));
                     }
 
                     // TODO Add support for bracketed tokens?
@@ -158,6 +134,11 @@ public class VDF {
                     throw x.syntaxError(String.format(fmtError, c));
             }
         }
+
+        if (convertArrays) {
+            return convertVDFArrays(jo);
+        }
+
         return jo;
     }
 
@@ -166,10 +147,169 @@ public class VDF {
      * into the JSON format.
      *
      * @param string Input data, assumed to be in the Valve Data Format.
+     * @param convertArrays Whether or not to convert VDF-formatted arrays into
+     * JSONArrays.
      * @return A JSON representation of the assumed-VDF data.
      * @throws JSONException Parse exception?
      */
-    public static JSONObject toJSONObject(String string) throws JSONException {
-        return toJSONObject(new JSONTokener(string));
+    public static JSONObject toJSONObject(String string, boolean convertArrays)
+            throws JSONException {
+        return toJSONObject(new JSONTokener(string), convertArrays);
+    }
+
+    /**
+     * Utility method to parse a VDF value.
+     *
+     * @param x The JSONTokener to use.
+     * @param delimiter The character that signals the end of the
+     * @return
+     * @throws JSONException
+     */
+    private static String getVDFValue(JSONTokener x, final char delimiter)
+            throws JSONException {
+        StringBuilder sb = new StringBuilder();
+
+        while (x.more()) {
+            char c = x.next();
+            switch (c) {
+                case BACK_SLASH:
+                    // Unescape character.
+                    sb.append(x.next());
+                    break;
+                default:
+                    // Return the string if the tokener hit the delimiter.
+                    // (If it was escaped, it was handled in the previous case.)
+                    if (c == delimiter) {
+                        return sb.toString();
+                    } // Otherwise, append it to the string.
+                    else {
+                        sb.append(c);
+                    }
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Recursively searches for JSONObjects, checking if they should be
+     * formatted as arrays, then converted.
+     *
+     * @param object An input JSONObject converted from VDF.
+     * @return JSONObject containing the input JSONObject with objects changed
+     * to arrays where applicable.
+     * @throws JSONException
+     */
+    private static JSONObject convertVDFArrays(JSONObject object) throws JSONException {
+        JSONObject resp = new JSONObject();
+
+        if (object.keySet().isEmpty()) {
+            return resp;
+        }
+
+        for (String name : (Set<String>) object.keySet()) {
+            JSONObject thing = object.optJSONObject(name);
+
+            if (thing != null) {
+                // Note:  Empty JSONObjects are also treated as arrays.
+                if (containsVDFArray(thing)) {
+                    List<String> sortingKeys = new ArrayList(thing.keySet());
+
+                    Collections.sort(sortingKeys, new Comparator<String>() {
+                        // Integers-as-strings comparator.
+                        @Override
+                        public int compare(String t, String t1) {
+                            int i = Integer.parseInt(t), i1 = Integer.parseInt(t1);
+                            return i - i1;
+                        }
+                    });
+
+                    JSONArray sortedKeys = new JSONArray(sortingKeys);
+
+                    if (sortedKeys.length() > 0) {
+                        JSONArray sortedObjects = thing.toJSONArray(sortedKeys);
+
+                        for (int i = 0; i < sortedObjects.length(); i++) {
+                            JSONObject arrayObject = sortedObjects.getJSONObject(i);
+
+                            /**
+                             * See if any values are also JSONObjects that
+                             * should be arrays.
+                             */
+                            sortedObjects.put(i, convertVDFArrays(arrayObject));
+                        }
+
+                        /**
+                         * If this JSONObject represents a non-empty array in
+                         * VDF format, convert it to a JSONArray.
+                         */
+                        resp.put(name, sortedObjects);
+                    } else {
+                        /**
+                         * If this JSONObject represents an empty array, give it
+                         * an empty JSONArray.
+                         */
+                        resp.put(name, new JSONArray());
+                    }
+                } else {
+                    /**
+                     * If this JSONObject is not a VDF array, see if its values
+                     * are before adding.
+                     */
+                    resp.put(name, convertVDFArrays(thing));
+                }
+            } else {
+                /**
+                 * It's a plain data value. Add it in.
+                 */
+                resp.put(name, object.get(name));
+            }
+        }
+
+        /**
+         * Return the converted JSONObject.
+         */
+        return resp;
+    }
+
+    /**
+     * Checks that a JSONObject converted from a VDF file is an array. If so,
+     * the only keys in the JSONObject are a continues set of integers
+     * represented by Strings starting from "0". Note that empty JSONObjects are
+     * also treated as arrays.
+     *
+     * @param object The JSONObject to check for a VDF-formatted array.
+     * @return Whether or not the JSONObject is a VDF-formatted array.
+     */
+    private static boolean containsVDFArray(JSONObject object) {
+        int indices = object.length();
+        int[] index = new int[indices];
+
+        for (int i = 0; i < indices; i++) {
+            index[i] = -1;
+        }
+
+        // Fail if we encounter a non-integer or if the value isn't a JSONObject
+        for (String name : (Set<String>) object.keySet()) {
+            if (object.optJSONObject(name) == null) {
+                return false;
+            }
+
+            try {
+                int i = Integer.parseInt(name);
+                index[i] = i;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
+        // Fail if we are missing any values (e.g., 0, 1, 2, 3, 4, 5, 7, 8, 9).
+        for (int i = 0; i < indices; i++) {
+            if (index[i] != i) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
