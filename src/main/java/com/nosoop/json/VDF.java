@@ -305,7 +305,11 @@ public class VDF {
             index[i] = -1;
         }
 
-        // Fail if we encounter a non-integer or if the value isn't a JSONObject
+        /**
+         * Fail if we encounter a non-integer, if a value isn't a JSONObject,
+         * or if the key is a number that is larger than the size of the array
+         * (meaning we're missing a value).
+         */
         for (String name : (Set<String>) object.keySet()) {
             if (object.optJSONObject(name) == null) {
                 return false;
@@ -313,6 +317,11 @@ public class VDF {
 
             try {
                 int i = Integer.parseInt(name);
+                
+                if (i >= indices) {
+                    return false;
+                }
+                
                 index[i] = i;
             } catch (NumberFormatException e) {
                 return false;
