@@ -186,6 +186,7 @@ public class VDF {
                         case '\\':
                         case '\"':
                             sb.append(u);
+                            break;
                         default:
                             String fmtError = 
                                     "Unexpected escape sequence \"\\%s\"";
