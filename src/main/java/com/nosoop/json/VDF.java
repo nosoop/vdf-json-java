@@ -77,7 +77,7 @@ public class VDF {
      * Attempts to convert what is assumed to be a JSONTokener containing a
      * String with VDF text into the JSON format.
      *
-     * @param string Input data, assumed to be in the Valve Data Format.
+     * @param x A JsonTokener instantiated with VDF data.
      * @param convertArrays Whether or not to convert VDF-formatted arrays into
      * JSONArrays.
      * @return A JSON representation of the assumed-VDF data.
@@ -161,8 +161,8 @@ public class VDF {
      * Utility method to parse a VDF value.
      *
      * @param x The JSONTokener to use.
-     * @param delimiter The character that signals the end of the
-     * @return
+     * @param delimiter The character that signals the end of the value.
+     * @return String extracted from the JSONTokener's current position up to the delimiter, with certain characters escaped.
      * @throws JSONException
      */
     private static String getVDFValue(JSONTokener x, final char delimiter)
